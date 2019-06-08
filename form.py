@@ -161,7 +161,7 @@ class MyTableWidget(QWidget):
 
     def update_table(self):
         data = work_with_db.get_aggregate_data()[0]
-        data.sort(key=lambda x: ORDER_AGGREGATE.get(x[0], 0))
+        data.sort(key=lambda x: ORDER_AGGREGATE.get(x[0], float('inf')))
         self.fill_table(data)
 
     def sld_clients_action(self, val):
@@ -216,7 +216,7 @@ class MatPlot(object):
             explode=explode,
             labels=labels,
             colors=self.colors,
-            autopct=lambda x: func(x, sizes),
+            autopct=lambda x: get_labels_pie(x, sizes),
             shadow=True,
             startangle=90
         )
@@ -225,7 +225,7 @@ class MatPlot(object):
         self.canvas.draw()
 
 
-def func(pct, all_value):
+def get_labels_pie(pct, all_value):
     absolute = int(round(pct / 100. * sum(all_value)))
     label_human = 'человек' + 'а' * (absolute % 10 in [2, 3, 4] and absolute % 100 not in [12, 13, 14])
     return "{:.1f}%\n({} {})".format(pct, absolute, label_human)
