@@ -161,7 +161,7 @@ class MyTableWidget(QWidget):
 
     def update_table(self):
         data = work_with_db.get_aggregate_data()[0]
-        data.sort(key=lambda x: ORDER_AGGREGATE[x[0]] if x[0] in ORDER_AGGREGATE else 0)
+        data.sort(key=lambda x: ORDER_AGGREGATE.get(x[0], 0))
         self.fill_table(data)
 
     def sld_clients_action(self, val):
@@ -176,26 +176,26 @@ class MyTableWidget(QWidget):
         cnt_credits = self.sld_clients.value()
         cnt_all_clients = work_with_db.get_count_clients()[0][0][0]
         cnt_target = work_with_db.get_count_valid_clients(cnt_credits)[0][0][0]
-        self.plot_active_clients.plot_bar(cnt_all_clients-cnt_target, cnt_target, cnt_credits)
+        self.plot_active_clients.plot_pie(cnt_all_clients - cnt_target, cnt_target, cnt_credits)
 
     def refresh_plot_clients_one_bank(self):
         cnt_credits = self.sld_clients_one_bank.value()
         cnt_all_clients = work_with_db.get_count_clients()[0][0][0]
         cnt_target = work_with_db.get_count_clients_one_bank(cnt_credits)[0][0][0]
-        self.plot_clients_one_bank.plot_bar(cnt_all_clients-cnt_target, cnt_target, cnt_credits)
+        self.plot_clients_one_bank.plot_pie(cnt_all_clients - cnt_target, cnt_target, cnt_credits)
 
 
 class MatPlot(object):
     def __init__(self, parent, labels):
         self.labels = labels
-        self.colors = ['lightskyblue', 'yellowgreen']
+        self.colors = ('lightskyblue', 'yellowgreen')
         self.explode = (0, 0.2)
         self.fig, self.ax1 = plt.subplots()
 
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(parent)
 
-    def plot_bar(self, all_clients, target, label):
+    def plot_pie(self, all_clients, target, label):
         self.ax1.clear()
         labels = self.labels[0], self.labels[1].format(label)
         sizes = [all_clients, target]
@@ -225,8 +225,8 @@ class MatPlot(object):
         self.canvas.draw()
 
 
-def func(pct, allvals):
-    absolute = int(round(pct / 100. * sum(allvals)))
+def func(pct, all_value):
+    absolute = int(round(pct / 100. * sum(all_value)))
     label_human = 'человек' + 'а' * (absolute % 10 in [2, 3, 4] and absolute % 100 not in [12, 13, 14])
     return "{:.1f}%\n({} {})".format(pct, absolute, label_human)
 
