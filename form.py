@@ -62,7 +62,6 @@ class MyTableWidget(QWidget):
 
         # START TABLE
         self.table = QTableWidget(self)
-        self.table.setColumnCount(4)
 
         self.table_header = [
             'Дней непрерывной \nпросрочки по ОД или %',
@@ -72,6 +71,7 @@ class MyTableWidget(QWidget):
         ]
 
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.setColumnCount(len(self.table_header))
         self.table.setHorizontalHeaderLabels(self.table_header)
         self.table.verticalHeader().setVisible(False)
 
